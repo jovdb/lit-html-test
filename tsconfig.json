@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "target": "es5",
+        "lib": ["dom", "es2015", "es2015.collection"],
+        "noImplicitAny": false,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitThis": true,
+        "outFile": "dist/js/app.js"
+    },
+    "files": [
+        "src/js/_references.ts"
+    ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "game-mv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc",
+    "tslint": "tslint"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tslint": "^5.8.0"
+  },
+  "devDependencies": {
+    "tslint": "^5.8.0",
+    "typescript": "^2.7.0-dev.20171028"
+  }
+}

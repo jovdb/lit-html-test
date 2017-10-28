@@ -1,0 +1,1 @@
+game.setContent(header.html("HEADER") + login.html());
