@@ -13,7 +13,9 @@ namespace app {
 	export function render() {
 		lit.render(html`
 			${components.header(`Hello ${loggedOnUserName}`)}
-			${components.login("Peter", async ({userName, password}) => { await loginUserAsync(userName, password); })}
+			${components.content(
+				html`${components.login("Peter", async ({userName, password}) => { await loginUserAsync(userName, password); })}`
+			)}
 		`, appEl);
 	}
 

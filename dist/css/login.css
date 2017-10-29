@@ -1,0 +1,12 @@
+.login .nvp:after {
+	content: "";
+	display: table;
+	clear: both;
+	margin: 0.5em 0;
+}
+
+.login .nvp__name,
+.login .nvp__value {
+	float: left;
+	min-width: 6em;
+}

@@ -3,5 +3,6 @@
 /// <reference path="utils.ts" />
 /// <reference path="api.ts" />
 /// <reference path="components/header.ts" />
+/// <reference path="components/content.ts" />
 /// <reference path="components/login.ts" />
 /// <reference path="app.ts" />
