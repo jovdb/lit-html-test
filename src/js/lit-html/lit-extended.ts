@@ -41,7 +41,7 @@ namespace lit {
      *
      */
     export function render(
-        result: TemplateResult, container: Element|DocumentFragment) {
+        result: TemplateResult, container: Element | DocumentFragment) {
         render_basic(result, container, extendedPartCallback);
     }
 
@@ -50,14 +50,14 @@ namespace lit {
             Part => {
             if (templatePart.type === 'attribute') {
                 if (templatePart.rawName!.startsWith('on-')) {
-                const eventName = templatePart.rawName!.substring(3);
-                return new EventPart(instance, node as Element, eventName);
+                    const eventName = templatePart.rawName!.substring(3);
+                    return new EventPart(instance, node as Element, eventName);
                 }
                 if (templatePart.name!.endsWith('$')) {
-                const name = templatePart.name!.substring(
-                    0, templatePart.name!.length - 1);
-                return new AttributePart(
-                    instance, node as Element, name, templatePart.strings!);
+                    const name = templatePart.name!.substring(
+                        0, templatePart.name!.length - 1);
+                    return new AttributePart(
+                        instance, node as Element, name, templatePart.strings!);
                 }
                 return new PropertyPart(
                     instance,
@@ -66,61 +66,61 @@ namespace lit {
                     templatePart.strings!);
             }
             return defaultPartCallback(instance, templatePart, node);
-            };
+        };
 
     export class PropertyPart extends AttributePart {
-    setValue(values: any[], startIndex: number): void {
-        const s = this.strings;
-        let value: any;
-        if (s.length === 2 && s[0] === '' && s[s.length - 1] === '') {
-        // An expression that occupies the whole attribute value will leave
-        // leading and trailing empty strings.
-        value = getValue(this, values[startIndex]);
-        } else {
-        // Interpolation, so interpolate
-        value = '';
-        for (let i = 0; i < s.length; i++) {
-            value += s[i];
-            if (i < s.length - 1) {
-            value += getValue(this, values[startIndex + i]);
+        setValue(values: any[], startIndex: number): void {
+            const s = this.strings;
+            let value: any;
+            if (s.length === 2 && s[0] === '' && s[s.length - 1] === '') {
+                // An expression that occupies the whole attribute value will leave
+                // leading and trailing empty strings.
+                value = getValue(this, values[startIndex]);
+            } else {
+                // Interpolation, so interpolate
+                value = '';
+                for (let i = 0; i < s.length; i++) {
+                    value += s[i];
+                    if (i < s.length - 1) {
+                        value += getValue(this, values[startIndex + i]);
+                    }
+                }
             }
+            (this.element as any)[this.name] = value;
         }
-        }
-        (this.element as any)[this.name] = value;
-    }
     }
 
     export class EventPart implements Part {
-    instance: TemplateInstance;
-    element: Element;
-    eventName: string;
-    private _listener: any;
+        instance: TemplateInstance;
+        element: Element;
+        eventName: string;
+        private _listener: any;
 
-    constructor(instance: TemplateInstance, element: Element, eventName: string) {
-        this.instance = instance;
-        this.element = element;
-        this.eventName = eventName;
-    }
+        constructor(instance: TemplateInstance, element: Element, eventName: string) {
+            this.instance = instance;
+            this.element = element;
+            this.eventName = eventName;
+        }
 
-    setValue(value: any): void {
-        const listener = getValue(this, value);
-        if (listener === this._listener) {
-        return;
+        setValue(value: any): void {
+            const listener = getValue(this, value);
+            if (listener === this._listener) {
+                return;
+            }
+            if (listener == null) {
+                this.element.removeEventListener(this.eventName, this);
+            } else if (this._listener == null) {
+                this.element.addEventListener(this.eventName, this);
+            }
+            this._listener = listener;
         }
-        if (listener == null) {
-        this.element.removeEventListener(this.eventName, this);
-        } else if (this._listener == null) {
-        this.element.addEventListener(this.eventName, this);
-        }
-        this._listener = listener;
-    }
 
-    handleEvent(event: Event) {
-        if (typeof this._listener === 'function') {
-        this._listener.call(this.element, event);
-        } else if (typeof this._listener.handleEvent === 'function') {
-        this._listener.handleEvent(event);
+        handleEvent(event: Event) {
+            if (typeof this._listener === 'function') {
+                this._listener.call(this.element, event);
+            } else if (typeof this._listener.handleEvent === 'function') {
+                this._listener.handleEvent(event);
+            }
         }
-    }
     }
 }

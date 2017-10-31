@@ -1,20 +1,22 @@
 namespace app {
 	const appEl = required(document.getElementById("app"), "#app element required")!;
-	let loggedOnUserName = "World";
+
+	const header = new components.HeaderComponent();
+	const login = new components.LoginComponent(async ({userName, password}) => { await loginUserAsync(userName, password); });
 
 	const loginUserAsync = async (userName: string, password: string) => {
 		const isLoggedOn = await api.loginUserAsync(userName, password);
 		if (isLoggedOn) {
-			loggedOnUserName = userName;
+			header.headerText = `Hello ${userName}`;
 			render();
 		}
 	};
 
 	export function render() {
 		lit.render(html`
-			${components.header(`Hello ${loggedOnUserName}`)}
+			${comp(header)},
 			${components.content(
-				html`${components.login("Peter", async ({userName, password}) => { await loginUserAsync(userName, password); })}`
+				html`${comp(login)}`
 			)}
 		`, appEl);
 	}

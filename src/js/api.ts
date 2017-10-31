@@ -4,7 +4,7 @@ namespace api {
 		return new Promise<boolean>(resolve => {
 			setTimeout(() => {
 				resolve(true);
-			}, 1000);
+			}, 500);
 		});
 	};
 }
