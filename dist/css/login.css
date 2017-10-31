@@ -10,3 +10,27 @@
 	float: left;
 	min-width: 6em;
 }
+
+.login .error-message {
+	font-size: 0.8em;
+	color: var(--dangerColor);
+	margin-top: 0.2em;
+}
+
+.login .error-message:before {
+	content: '✖';
+	display: inline-block;
+	margin-right: 0.5em;
+	background-color: var(--dangerColor);
+	border: 1px solid var(--dangerColor);
+	color: var(--whiteColor);
+	width: 1em;
+	height: 1em;
+	line-height: 1em;
+	border-radius: 0.5em;
+	text-align: center;
+}
+
+.login .error-message.hide {
+	display: none;
+}

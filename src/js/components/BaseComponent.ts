@@ -1,27 +1,57 @@
 namespace components {
 
 	export abstract class BaseComponent {
-		protected nodePart: lit.NodePart;
 
-		public abstract render(): lit.TemplateResult;
+		private isRerenderRequested = false;
+		private nodePart: lit.NodePart;
 
-		/** Update component */
-		public update() {
-			this.nodePart.setValue(this.render());
+		protected abstract getTemplate(): lit.TemplateResult;
+
+		/**
+		 * Update component will redraw the component synchroniously.
+		 * Prefer invalidate() to request an UI update.
+		 */
+		protected update() { // Protected by default
+			this.nodePart.setValue(this.getTemplate());
 		}
 
-		/** Set NodePart containing the component (used by comp) */
-		public setNodePart(nodePart: lit.NodePart) {
+		/**
+		 * Request an UI update asynchronious.
+		 * Multiple requests are batched as one UI update.
+		 */
+		protected async invalidate() { // Protected by default
+			if (!this.isRerenderRequested) {
+				this.isRerenderRequested = true;
+				// Schedule the following as micro task, which runs before requestAnimationFrame.
+				// All additional invalidate() calls before will be ignored.
+				// https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/
+				this.isRerenderRequested = await false;
+				this.update();
+			}
+		}
+
+		/**
+		 * Set NodePart containing the component (used by comp).
+		 * This is needed to do an UI update
+		 */
+		protected setNodePart(nodePart: lit.NodePart) {
 			this.nodePart = nodePart;
 		}
+
+		// TODO:
+		// - beforeTemplate?
+		// - afterTemplate?
+
 	}
 
 }
 
-
+/**
+ * Lit directive to add a 'Component'.
+ */
 function comp(comp: components.BaseComponent) {
 	return lit.directive((part: lit.Part) => {
-		comp.setNodePart((part as lit.NodePart));
-		return comp.render();
+		(comp as any).setNodePart((part as lit.NodePart));
+		return (comp as any).getTemplate();
 	});
 }
