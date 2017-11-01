@@ -1,7 +1,9 @@
 :root {
 	--whiteColor: #f0f0f0;
-	--dangerColor: #882323;
+	--dangerColor: #a01c1c;
 	--primaryColor: #4000ff;
+	--primaryLightColor: #6b3aff;
+	--primaryLighterColor: #9c7eff;
 	--fontFamilies: Tahoma, Geneva, sans-serif;
 	--fontSize: 16px;
 }
@@ -22,4 +24,23 @@ input[type=button],
 button {
 	font-family: var(--fontFamilies);
 	font-size: var(--fontSize);
+	min-width: 5em;
+
+	background-color: var(--primaryLightColor);
+	border: 1px solid var(--primaryColor);
+	padding: 0.5em;
+	color: var(--whiteColor);
+	border-radius: 3px;
+}
+
+input[type=button][disabled],
+button[disabled] {
+	background-color: var(--primaryLighterColor);
+	border: 1px solid var(--primaryLightColor);
+}
+
+input[type=button]:not([disabled]):hover,
+button:not([disabled]):hover {
+	background-color: var(--primaryColor);
+	cursor: pointer;
 }

@@ -1,6 +1,6 @@
 namespace components {
 	export interface IOKCancelPopupOptions {
-		title: string;
+		title: any;
 		body: string;
 		okButtonText?: string;
 		cancelButtonText?: string;
@@ -30,8 +30,8 @@ namespace components {
 				header: options.title,
 				body: options.body,
 				footer: html`
-					<button on-click="${onOkClick}" style="margin-right: 0.5em">${okButtonText}</button>
-					<button on-click="${onCancelClick}">${cancelButtonText}</button>`
+					<button on-click="${onCancelClick}">${cancelButtonText}</button>
+					<button on-click="${onOkClick}">${okButtonText}</button>`
 			});
 		}
 	}

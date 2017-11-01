@@ -2,36 +2,54 @@ namespace components {
 
 	export class AppComponent extends BaseComponent {
 
-		private readonly header: HeaderComponent;
-		private readonly login: LoginComponent;
+		private loggedOnUser = "";
 
 		constructor() {
 			super();
-			this.header = new HeaderComponent();
-			this.login = new LoginComponent(async ({userName, password}) => { await this.loginUserAsync(userName, password); });
 		}
 
-		private async loginUserAsync(userName: string, password: string) {
-			const isLoggedOn = await api.loginUserAsync(userName, password);
-			if (isLoggedOn) {
-				this.header.headerText = `Hello ${userName}`;
+		private onUserClick = () => {
+			if (this.loggedOnUser) {
+
+				// LogOff
+				const popup = new OkCancelPopupComponent({
+					title: html`${icon("user")} Log off?`,
+					body: `Are you sure you want log off '${this.loggedOnUser}'?`,
+				});
+				PopupComponent.openAsync(popup).then(shouldLogOff => {
+					if (shouldLogOff) this.loggedOnUser = "";
+				});
+
+			} else {
+
+				// LogOn
+				LoginPopup.openAsync(new LoginPopup()).then(loginData => {
+					if (loginData) {
+						api.loginUserAsync(loginData.userName, loginData.password).then(isLoggedOn => {
+							if (isLoggedOn) {
+								this.loggedOnUser = loginData.userName;
+								this.invalidate();
+							}
+						});
+					}
+				});
 			}
-		}
-
-		private openPopupAsync = async () => {
-			const popup = new OkCancelPopupComponent({
-				title: "Are you sure?",
-				body: "Are you sure you like this?",
-			});
-			return PopupComponent.openAsync(popup);
 		}
 
 		protected getTemplate() {
 			return html`
-				${comp(this.header)}
+				${header(html`
+					<span class="left">
+						<h1>Hello ${this.loggedOnUser}</h1>
+					</span>
+					<span class="right">
+						<span style="opacity: ${this.loggedOnUser ? 1 : 0.5}" on-click="${this.onUserClick}">
+							${icon("user")}
+						</span>
+					</span>
+				`)}
 				${content(html`
-					${comp(this.login)}<br/>
-					<button on-click="${this.openPopupAsync}">Popup Test</button>
+				Gummies candy canes brownie candy canes candy cake sugar plum lollipop. Jelly beans sesame snaps sesame snaps. Chupa chups gummi bears cotton candy cookie macaroon dragée. Bear claw lollipop cookie sweet roll. Jelly beans gummies marzipan jelly toffee carrot cake bonbon topping dragée. Liquorice sugar plum carrot cake danish jelly beans caramels pie jelly. Jelly-o sweet roll liquorice sweet roll jelly-o macaroon icing tart croissant. Cookie candy canes jujubes. Jujubes jelly beans donut oat cake. Gummies candy canes donut sweet roll. Liquorice gummi bears lemon drops toffee cheesecake biscuit jelly dessert bonbon. Wafer jujubes pie cake. Brownie chocolate cake tootsie roll.
 				`)}`;
 		}
 	}

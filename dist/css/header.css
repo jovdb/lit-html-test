@@ -1,10 +1,31 @@
 .header {
 	color: var(--whiteColor);
+	fill: var(--whiteColor);
 	background-color: var(--primaryColor);
 	padding: 0.5em 1em;
 	font-family: var(--fontFamilies);
 }
 
+.header:after {
+	/* Clearfix */
+	content: "";
+	display: table;
+	clear: both;
+}
+
 .header h1 {
 	margin: 0;
+	display: inline-block;
 }
+.header .left {
+	float: left;
+}
+
+.header .right {
+	float: right;
+}
+.header .right .icon {
+	width: 2em;
+	cursor: pointer;
+}
+

@@ -6,4 +6,8 @@ namespace app {
 		if (value === null || value === undefined) throw new Error(message || "Value is required");
 		return value;
 	}
+
+	export function assertNever(x: never): never {
+		throw new Error(`Unexpected object: ${x}`);
+	}
 }

@@ -629,3 +629,4 @@ namespace lit {
 
 // Added shortcut
 const html = lit.html;
+const svg = lit.svg;

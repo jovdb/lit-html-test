@@ -1,3 +1,8 @@
+.login {
+	min-height: 6em; /* to prevent height change when error appear */
+}
+
+/* clearfix */
 .login .nvp:after {
 	content: "";
 	display: table;

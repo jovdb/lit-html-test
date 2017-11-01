@@ -38,7 +38,8 @@ namespace components {
 		 * Set NodePart containing the component (used by comp).
 		 * This is needed to do an UI update
 		 */
-		protected setNodePart(nodePart: lit.NodePart) {
+		// @ts-ignore
+		private setNodePart(nodePart: lit.NodePart) {
 			this.nodePart = nodePart;
 		}
 
