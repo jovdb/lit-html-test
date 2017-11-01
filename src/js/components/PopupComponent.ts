@@ -1,9 +1,22 @@
 namespace components {
 	export interface IPopupOptions {
-		content: any;
+		/** Use content if you want to control the entire screen */
+		content?: any;
+		header?: any;
+		body?: any;
+		footer?: any;
 		canCloseViaOverlay?: boolean;
 	}
 
+	/**
+	 * Create a Popup screen
+	 * Missing:
+	 * - Focus
+	 *   - Initial focus to popup (away fro button/link that opened it)
+	 * - Keyboard handling
+	 *   - Esc to close
+	 *   - Prevent Tab going outside form
+	 */
 	export class PopupComponent<TResult = undefined> extends BaseComponent {
 
 		private options: IPopupOptions;
@@ -15,7 +28,7 @@ namespace components {
 		}
 
 		private onPopupClicked = (e: Event) => {
-			if (e.target === e.currentTarget) { // clicked on top-level
+			if (this.options.canCloseViaOverlay && e.target === e.currentTarget) { // clicked on top-level
 				if (this.resolve) this.close(undefined);
 			}
 		}
@@ -41,12 +54,16 @@ namespace components {
 		protected getTemplate() {
 			return html`
 				<div class$="popup${this.resolve ? " open" : ""}" on-click="${this.onPopupClicked}">
-					${this.options.content ? html`<div class="popup-content">${this.options.content}</div>` : ""}
+					<div class="popup-content">${this.options.content}
+						${!this.options.content && this.options.header ? html`<div class="popup-header">${this.options.header}</div>` : ""}
+						${!this.options.content && this.options.body ? html`<div class="popup-body">${this.options.body}</div>` : ""}
+						${!this.options.content && this.options.footer ? html`<div class="popup-footer">${this.options.footer}</div>` : ""}
+					</div>
 				</div>`;
 		}
 
 		/** Add this popup to the DOM */
-		public static async openAsync(popup: PopupComponent, targetEl?: HTMLElement) {
+		public static async openAsync<TResult = undefined>(popup: PopupComponent<TResult>, targetEl?: HTMLElement) {
 
 			let shouldRemoveComponent = false;
 			const addedTarget = !targetEl;

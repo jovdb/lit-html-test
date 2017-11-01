@@ -1,3 +1,8 @@
+:root {
+	--popup-padding: 1rem;
+	--popup-animation-duration: 0.1s;
+}
+
 .popup {
 	position: fixed;
 	left: 0;
@@ -14,9 +19,9 @@
 	opacity: 0;
 
 	/* Start of Animation */
-	transition: visibility 0.3s step-end,
-		opacity 0.3s ease-out,
-		transform 0.3s step-end; /* First visibility for browsers that don't support multiple transitions */
+	transition: visibility var(--popup-animation-duration) step-end,
+		opacity var(--popup-animation-duration) ease-out,
+		transform var(--popup-animation-duration) step-end; /* First visibility for browsers that don't support multiple transitions */
 
 	display: flex;
 	align-items: center;
@@ -37,24 +42,25 @@
 	overflow-y: hidden;
 
 	/* Open Animation */
-	transform: translate3d(0, -40px, 0);
-	transition: transform 0.3s;
+	transform: translate3d(0, -40px, 0) scale(0.95);
+	transition: transform var(--popup-animation-duration);
 
 	background-color: #ffffff;
 }
+
 
 .popup.open
 {
 	visibility: visible;
 	
 	/* Move ouside screen (hidden iframe eats events, visible items on visibable div are shown) */
-	transform: translate(0, 0); /* move to bottom right, so no overflow */
+	transform: translate(0, 0) scale(1);/* move to bottom right, so no overflow */
 	opacity: 1;
-
+	
 	/* Open Fullscreen Animation */
-	transition: visibility 0.3s step-start,
-		opacity 0.3s ease-in,
-		transform 0.3s step-start;
+	transition: visibility var(--popup-animation-duration) step-start,
+	opacity var(--popup-animation-duration) ease-in,
+	transform var(--popup-animation-duration)s step-start;
 }
 
 .popup.open > .popup-content
@@ -62,6 +68,24 @@
 	position: relative; /* to make offset parent for close icon (top, right) */
 	display: flex;
 	flex-direction: column;
-
+	
 	transform: none; /* none removes blured state after animation (Edge) */
+}
+
+.popup .popup-content > .popup-header
+{
+	padding: var(--popup-padding) var(--popup-padding) 0.5em var(--popup-padding); /* 0.5em: feel-good margin relative to font-size */
+	font-size: 1.5em;
+	color: var(--primaryColor);
+}
+
+.popup .popup-content > .popup-body
+{
+	padding: 0.5em var(--popup-padding) 0.5em var(--popup-padding); /* 0.5em: feel-good margin relative to font-size */
+}
+
+.popup .popup-content > .popup-footer
+{
+	padding: 0.5em var(--popup-padding) var(--popup-padding) var(--popup-padding); /* 0.5em: feel-good margin relative to font-size */
+	text-align: right;
 }

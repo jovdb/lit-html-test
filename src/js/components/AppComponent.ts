@@ -19,8 +19,9 @@ namespace components {
 		}
 
 		private openPopupAsync = async () => {
-			const popup = new PopupComponent({
-				content: "Hellow world?"
+			const popup = new OkCancelPopupComponent({
+				title: "Are you sure?",
+				body: "Are you sure you like this?",
 			});
 			return PopupComponent.openAsync(popup);
 		}
