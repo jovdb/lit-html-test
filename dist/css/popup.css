@@ -1,0 +1,67 @@
+.popup {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+
+	/* For animation with 1 class, use visibility and opacity instead of display */
+	/* http://stackoverflow.com/questions/3331353/transitions-on-the-display-#answer-6943704 */
+	visibility: hidden; /* used visibility so no pointer-events needed, remark: a child can be made visible */
+
+	/* Move outside visible screen (hidden iframe eats events: #23856, visible items on hidden div are shown) */
+	transform: translate(200%, 200%); /* move to bottom right, so no overflow */
+	opacity: 0;
+
+	/* Start of Animation */
+	transition: visibility 0.3s step-end,
+		opacity 0.3s ease-out,
+		transform 0.3s step-end; /* First visibility for browsers that don't support multiple transitions */
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	box-sizing: border-box;
+	padding: 1em;
+
+	background-color: rgba(0, 0, 0, 0.6);
+}
+
+
+.popup .popup-content {
+
+	min-width: 600px;
+	width: 600px;
+	max-height: 100%;
+	overflow-y: hidden;
+
+	/* Open Animation */
+	transform: translate3d(0, -40px, 0);
+	transition: transform 0.3s;
+
+	background-color: #ffffff;
+}
+
+.popup.open
+{
+	visibility: visible;
+	
+	/* Move ouside screen (hidden iframe eats events, visible items on visibable div are shown) */
+	transform: translate(0, 0); /* move to bottom right, so no overflow */
+	opacity: 1;
+
+	/* Open Fullscreen Animation */
+	transition: visibility 0.3s step-start,
+		opacity 0.3s ease-in,
+		transform 0.3s step-start;
+}
+
+.popup.open > .popup-content
+{
+	position: relative; /* to make offset parent for close icon (top, right) */
+	display: flex;
+	flex-direction: column;
+
+	transform: none; /* none removes blured state after animation (Edge) */
+}

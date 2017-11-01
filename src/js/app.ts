@@ -1,6 +1,6 @@
 namespace app {
 	const appEl = required(document.getElementById("app"), "#app element required")!;
-	const appComponent = new components.AppComponent();
+	export const appComponent = new components.AppComponent();
 
 	export function render() {
 		lit.render(html`${comp(appComponent)}`, appEl);

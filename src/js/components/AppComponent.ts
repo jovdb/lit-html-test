@@ -2,13 +2,13 @@ namespace components {
 
 	export class AppComponent extends BaseComponent {
 
-		private readonly header: components.HeaderComponent;
-		private readonly login: components.LoginComponent;
+		private readonly header: HeaderComponent;
+		private readonly login: LoginComponent;
 
 		constructor() {
 			super();
-			this.header = new components.HeaderComponent();
-			this.login = new components.LoginComponent(async ({userName, password}) => { await this.loginUserAsync(userName, password); });
+			this.header = new HeaderComponent();
+			this.login = new LoginComponent(async ({userName, password}) => { await this.loginUserAsync(userName, password); });
 		}
 
 		private async loginUserAsync(userName: string, password: string) {
@@ -18,12 +18,20 @@ namespace components {
 			}
 		}
 
+		private openPopupAsync = async () => {
+			const popup = new PopupComponent({
+				content: "Hellow world?"
+			});
+			return PopupComponent.openAsync(popup);
+		}
+
 		protected getTemplate() {
 			return html`
 				${comp(this.header)}
-				${components.content(
-					html`${comp(this.login)}`
-				)}`;
+				${content(html`
+					${comp(this.login)}<br/>
+					<button on-click="${this.openPopupAsync}">Popup Test</button>
+				`)}`;
 		}
 	}
 }
