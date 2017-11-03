@@ -91,7 +91,7 @@
 		"no-unnecessary-initializer": true,
 		"no-unnecessary-type-assertion": true,
 		"no-unnecessary-qualifier": true,
-		"no-unsafe-any": true,
+		"no-unsafe-any": false,
 		"no-unused-expression": true,
 		"no-use-before-declare": false,
 		"no-var-keyword": true,

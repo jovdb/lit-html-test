@@ -2,8 +2,8 @@ namespace components {
 
 	export class HeaderComponent extends BaseComponent {
 
-		protected _content = undefined;
-		public get content() { return this._content; }
+		protected _content: any = undefined;
+		public get content(): any { return this._content; }
 		public set content(value: any) {this._content = value; this.invalidate(); }
 
 		public getTemplate() {

@@ -1,5 +1,5 @@
-.login {
-	min-height: 6em; /* to prevent height change when error appear */
+.login-body {
+	min-height: 6.5em; /* to prevent height change when error appear */
 }
 
 /* clearfix */

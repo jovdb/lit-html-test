@@ -17,12 +17,10 @@
 
 	/* Move outside visible screen (hidden iframe eats events: #23856, visible items on hidden div are shown) */
 	transform: translate(200%, 200%); /* move to bottom right, so no overflow */
-	opacity: 0;
 
 	/* Start of Animation */
 	transition: visibility var(--popup-animation-duration) step-end,
-		opacity var(--popup-animation-duration) ease-out,
-		transform var(--popup-animation-duration) step-end; /* First visibility for browsers that don't support multiple transitions */
+	transform var(--popup-animation-duration) step-end; /* First visibility for browsers that don't support multiple transitions */
 
 	display: flex;
 	align-items: center;
@@ -34,7 +32,19 @@
 }
 
 
-.popup .popup-content {
+.popup.open
+{
+	visibility: visible;
+	
+	/* Move ouside screen (hidden iframe eats events, visible items on visibable div are shown) */
+	transform: translate(0, 0);
+	
+	/* Open Fullscreen Animation */
+	transition: visibility var(--popup-animation-duration) step-start,
+		transform var(--popup-animation-duration)s step-start;
+}
+
+.popup > .popup-content {
 
 	position: relative; /* to make offset parent for close icon (top, right) */
 	display: flex;
@@ -46,20 +56,6 @@
 }
 
 
-.popup.open
-{
-	visibility: visible;
-	
-	/* Move ouside screen (hidden iframe eats events, visible items on visibable div are shown) */
-	transform: translate(0, 0) scale(1);/* move to bottom right, so no overflow */
-	opacity: 1;
-	
-	/* Open Fullscreen Animation */
-	transition: visibility var(--popup-animation-duration) step-start,
-	opacity var(--popup-animation-duration) ease-in,
-	transform var(--popup-animation-duration)s step-start;
-}
-
 .popup.open > .popup-content
 {
 	position: relative; /* to make offset parent for close icon (top, right) */
@@ -69,7 +65,7 @@
 	transform: none; /* none removes blured state after animation (Edge) */
 }
 
-.popup .popup-content > .popup-header
+.popup > .popup-content .popup-header
 {
 	flex: 0 0 auto;
 	padding: var(--popup-padding) var(--popup-padding) 0.5em var(--popup-padding); /* 0.5em: feel-good margin relative to font-size */
@@ -78,21 +74,21 @@
 	fill: var(--primaryColor);
 }
 
-.popup .popup-content > .popup-body
+.popup > .popup-content .popup-body
 {
 	flex: 1 0 auto;
 	padding: 0.5em var(--popup-padding) 0.5em var(--popup-padding); /* 0.5em: feel-good margin relative to font-size */
 }
 
-.popup .popup-content > .popup-footer
+.popup > .popup-content .popup-footer
 {
 	flex: none;
 	padding: 0.5em var(--popup-padding) var(--popup-padding) var(--popup-padding); /* 0.5em: feel-good margin relative to font-size */
 	text-align: right;
 }
 
-.popup .popup-content > .popup-footer button,
-.popup .popup-content > .popup-footer input[type=button]
+.popup > .popup-content .popup-footer button,
+.popup > .popup-content .popup-footer input[type=button]
 {
 	margin-left: 0.5em;
 }
@@ -100,11 +96,31 @@
 @media screen and (min-width: 640px)
 {
 
-	.popup {
+	.popup
+	{
 		padding: 1em;
+		opacity: 0;
+
+		/* Start of Animation */
+		transition: visibility var(--popup-animation-duration) step-end,
+			opacity var(--popup-animation-duration) ease-out,
+			transform var(--popup-animation-duration) step-end; /* First visibility for browsers that don't support multiple transitions */
+
 	}
 
-	.popup .popup-content {
+	.popup.open
+	{
+		opacity: 1;
+
+		/* Open Fullscreen Animation */
+		transition: visibility var(--popup-animation-duration) step-start,
+			opacity var(--popup-animation-duration) ease-out,
+			transform var(--popup-animation-duration) step-start;
+
+	}
+
+	.popup > .popup-content
+	{
 		min-width: var(--popup-default-width);
 		width: var(--popup-default-width);
 		height: auto;
@@ -113,8 +129,15 @@
 
 		/* Open Animation */
 		transform: translate3d(0, -40px, 0) scale(0.95);
-		transition: transform var(--popup-animation-duration);
+		transition: transform var(--popup-animation-duration) ease-out;
 		border-radius: 4px;
 		box-shadow: 0.2rem 0.2rem 0.1rem rgba(0, 0, 0, 0.2);
 	}
+
+	.popup.open > .popup-content
+	{
+		transition: transform var(--popup-animation-duration) ease-out;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+
 }

@@ -15,52 +15,64 @@ namespace components {
 		constructor() {
 
 			super();
-
-			const isSubmitEnabled = () => !!(this.userName && !this.userNameErrorMessage && this.password && !this.passwordErrorMessage);
-
 			this.canCloseViaOverlay = true;
-			this.header = () => html`${icon("user")} Login`;
-			this.body = () => html`
-				<form class="login" autocomplete="off">
-					<div class="nvp">
-						<div class="nvp__name">Username: </div>
-						<div class="nvp__value">
-							<input type="text" name="username" on-input="${this.onUserNameChange}"/>
-							<div class$="error-message${this.userNameErrorMessage ? "" : " hide"}">${this.userNameErrorMessage}</div>
-						</div>
-					</div>
-					<div class="nvp">
-						<div class="nvp__name">Password: </div>
-						<div class="nvp__value">
-							<input type="password" name="password" on-input="${this.onPasswordChange}"/>
-							<div class$="error-message${this.passwordErrorMessage ? "" : " hide"}">${this.passwordErrorMessage}</div>
-						</div>
-					</div>
-				</form>`;
-			this.footer = () => html`
-				<button on-click="${this.onCancelClick}">Cancel</button>
-				<button on-click="${this.onSubmitClick}" type="submit" disabled="${!isSubmitEnabled()}">Login</button>
-			`;
 			this.userName = "";
 			this.password = "";
 			this.userNameErrorMessage = "";
 			this.passwordErrorMessage = "";
 		}
 
+		protected getContentTemplate() {
+
+			return html`
+				<div class="popup-content login">
+					<div class="popup-header">${icon("user")} Login</div>
+					<div class="popup-body login-body">
+						<div class="nvp">
+							<div class="nvp__name">Username: </div>
+							<div class="nvp__value">
+								<input type="text" name="username" on-input="${this.onUserNameChange}" autofocus/>
+								<div class$="error-message${this.userNameErrorMessage ? "" : " hide"}">${this.userNameErrorMessage}</div>
+							</div>
+						</div>
+						<div class="nvp">
+							<div class="nvp__name">Password: </div>
+							<div class="nvp__value">
+								<input type="password" name="password" on-input="${this.onPasswordChange}"/>
+								<div class$="error-message${this.passwordErrorMessage ? "" : " hide"}">${this.passwordErrorMessage}</div>
+							</div>
+						</div>
+					</div>
+					<div class="popup-footer">
+						<button on-click="${this.onCancelClick}">Cancel</button>
+						<button on-click="${this.onSubmitClick}" disabled="${!this.isSubmitEnabled()}">Login</button>
+					</div>
+				</div>`;
+		}
+
+		private isSubmitEnabled() {
+			return !!(this.userName && !this.userNameErrorMessage && this.password && !this.passwordErrorMessage);
+		}
+
 		private readonly onSubmitClick = (e: Event) => {
+
+			if (!this.isSubmitEnabled()) return false;
+
 			const popupEl = this.getChildren()[0];
 			const data: ILoginData = {
 				userName: (popupEl.querySelector<HTMLInputElement>('[name="username"]'))!.value,
 				password: (popupEl.querySelector<HTMLInputElement>('[name="password"]'))!.value
 			};
 			this.close(data);
-			e.preventDefault(); // Don't perform default GET request
+			e.preventDefault();
 			e.stopPropagation();
+			return false; // Don't perform default GET request
 		}
 
 		private readonly onCancelClick = (e: Event) => {
 			this.close(undefined);
 			e.stopPropagation();
+			e.preventDefault(); // Don't perform default GET request
 		}
 
 		private readonly validateUserName = (userName: string) => {
@@ -89,6 +101,25 @@ namespace components {
 			this.password = passwordEl.value;
 			this.passwordErrorMessage = this.validatePassword(this.password);
 			this.invalidate();
+		}
+
+		protected onKeyDown(e: KeyboardEvent) {
+
+			const keyCode = e.which || e.keyCode;
+			if (keyCode === 13) {
+				if (this.isSubmitEnabled()) {
+					this.onSubmitClick(e);
+				} else {
+
+					// And validation messages
+					this.userNameErrorMessage = this.validateUserName(this.userName);
+					this.passwordErrorMessage = this.validatePassword(this.password);
+					this.invalidate();
+				}
+				e.preventDefault(); // Don't press form button
+			}
+
+			super.onKeyDown(e);
 		}
 	}
 

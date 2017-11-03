@@ -1,4 +1,4 @@
-.header {
+	.header {
 	color: var(--whiteColor);
 	fill: var(--whiteColor);
 	background-color: var(--primaryColor);
@@ -27,5 +27,17 @@
 .header .right .icon {
 	width: 2em;
 	cursor: pointer;
+
+	transition: transform 0.1s ease-in-out;
+}
+
+.header .right .icon:active {
+	width: 2em;
+	cursor: pointer;
+	transform: scale(0.98);
+}
+
+.header .right .icon:hover {
+	fill: #fff;
 }
 
