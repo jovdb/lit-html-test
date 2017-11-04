@@ -1,9 +1,9 @@
 namespace api {
 	// @ts-ignore
 	export const loginUserAsync = async (userName: string, password: string) => {
-		return new Promise<boolean>(resolve => {
+		return new Promise<undefined>(resolve => {
 			setTimeout(() => {
-				resolve(true);
+				resolve(undefined);
 			}, 500);
 		});
 	};

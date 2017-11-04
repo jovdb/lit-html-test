@@ -1,9 +1,11 @@
 namespace components {
 
 	export type IconName = "user" | "question";
-	export function icon(name: IconName, options: {
+	export function icon(options: {
+		name: IconName;
 		color?: string;
-	} = {}) {
+	}) {
+		const {name, color} = options;
 
 		let svgData = svg``;
 		switch (name) {
@@ -24,10 +26,8 @@ namespace components {
 				</svg>`;
 				break;
 			default:
-				return app.assertNever(name);
+				return app.fail(name);
 		}
-
-		const {color} = options;
 
 		return html`<div class="icon" data-name$="${name}" style$="${color ? `fill: ${color}` : ""}">${svgData}</div>`;
 	}

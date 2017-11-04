@@ -1,3 +1,16 @@
+/*
+╭────────────────────────────────╮
+│ BaseComponent                  │
+├────────────────────────────────┤
+│ getTemplate()                  │ returns the lit-html template
+│ update()                       │ triggers a UI update
+│ invalidate()                   │ batch up a UI update for the next cycle
+│ getRootChildren()              │ get the root element(s) of the component
+│ beforeDetach()                 │ component root element added to DOM
+│ afterAttach()                  │ component root element removed from DOM
+╰────────────────────────────────╯
+*/
+
 // tslint:disable: no-unsafe-any
 namespace components {
 
@@ -57,11 +70,7 @@ namespace components {
 			return undefined;
 		}
 
-		// TODO?
-		// - beforeUpdate? can be done by overriding update
-		// - afterUpdate? can be done by overriding update
-
-		protected getChildren(): HTMLElement[] {
+		protected getRootChildren(): HTMLElement[] {
 			if (!this.nodePart) throw new Error("Component not yet rendered");
 
 			const children: HTMLElement[] = [];

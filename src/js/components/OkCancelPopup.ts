@@ -7,7 +7,7 @@ namespace components {
 		defaultAnswer?: boolean | undefined;
 	}
 
-	export class OkCancelPopupComponent extends PopupComponent2<boolean | undefined> {
+	export class OkCancelPopupComponent extends PopupComponent<boolean | undefined> {
 
 		private options: IOKCancelPopupOptions;
 

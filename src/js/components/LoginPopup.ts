@@ -5,7 +5,7 @@ namespace components {
 		password: string;
 	}
 
-	export class LoginPopup extends PopupComponent2<ILoginData | undefined> {
+	export class LoginPopup extends PopupComponent<ILoginData | undefined> {
 
 		private userName: string;
 		private userNameErrorMessage: string;
@@ -26,7 +26,7 @@ namespace components {
 
 			return html`
 				<div class="popup-content login">
-					<div class="popup-header">${icon("user")} Login</div>
+					<div class="popup-header">${icon({name: "user"})} Login</div>
 					<div class="popup-body login-body">
 						<div class="nvp">
 							<div class="nvp__name">Username: </div>
@@ -58,7 +58,7 @@ namespace components {
 
 			if (!this.isSubmitEnabled()) return false;
 
-			const popupEl = this.getChildren()[0];
+			const popupEl = this.getRootChildren()[0];
 			const data: ILoginData = {
 				userName: (popupEl.querySelector<HTMLInputElement>('[name="username"]'))!.value,
 				password: (popupEl.querySelector<HTMLInputElement>('[name="password"]'))!.value

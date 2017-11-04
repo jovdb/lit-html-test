@@ -3,7 +3,7 @@ namespace components {
 	/**
 	 * Create a Popup screen
 	 */
-	export abstract class PopupComponent2<TResult = undefined> extends BaseComponent {
+	export abstract class PopupComponent<TResult = undefined> extends BaseComponent {
 
 		private resolve: ((value: TResult | undefined) => void) | undefined;
 
@@ -34,7 +34,7 @@ namespace components {
 		}
 
 		protected getSelectableItems (): HTMLElement[] {
-			const el = this.getChildren()[0];
+			const el = this.getRootChildren()[0];
 			if (el) {
 				const focusableEls = el.querySelectorAll<HTMLElement>("button:not([disabled]), input:not([disabled]), a, textarea:not([disabled]), select:not([disabled]), [tabindex]");
 				return Array.from(focusableEls);
@@ -43,7 +43,7 @@ namespace components {
 		}
 
 		protected focusOnStartUp (): HTMLElement | undefined {
-			const el = this.getChildren()[0];
+			const el = this.getRootChildren()[0];
 			if (el) {
 				const autoFocusEl = el.querySelector<HTMLElement>("[autofocus]");
 				if (autoFocusEl) return autoFocusEl;
@@ -75,7 +75,7 @@ namespace components {
 		}
 
 		/** Add this popup to the DOM */
-		public static async openAsync<TResult = undefined>(popup: PopupComponent2<TResult>, targetEl?: HTMLElement) {
+		public static async openAsync<TResult = undefined>(popup: PopupComponent<TResult>, targetEl?: HTMLElement) {
 
 			let shouldRemoveComponent = false;
 			const addedTarget = !targetEl;
