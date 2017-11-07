@@ -15,19 +15,15 @@ interface IReadonlyBroadcaster {
 }
 
 interface IBroadcaster extends IReadonlyBroadcaster {
-	publish<TMessage extends IMessage>(message: TMessage);
+	publish<TMessage extends IMessage>(message: TMessage): TMessage;
 }
 
 
 class Broadcaster implements IBroadcaster {
 	private _listeners: ((action: IMessage) => void)[];
 
-	/** Only the last stealer gets the messages */
-	private _stealers: ((action: IMessage) => void)[];
-
 	constructor() {
 		this._listeners = [];
-		this._stealers = [];
 	}
 
 	/** Get notificaions of executed (root) commands */
@@ -40,13 +36,10 @@ class Broadcaster implements IBroadcaster {
 		};
 	}
 
-	public publish<TMessage extends IMessage>(message: TMessage) {
-		if (this._stealers.length > 0) {
-			this._stealers[this._stealers.length - 1](message);
-		} else {
-			// First copy so unsubscribers don't manipulate the list iterating
-			this._listeners.slice(0).forEach(listener => { listener(message); });
-		}
+	public publish<TMessage extends IMessage>(message: TMessage): TMessage {
+		// First copy so unsubscribers don't manipulate the list iterating
+		this._listeners.slice(0).forEach(listener => { listener(message); });
+		return message;
 	}
 
 }

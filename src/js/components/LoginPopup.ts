@@ -11,18 +11,41 @@ namespace components {
 		private userNameErrorMessage: string;
 		private password: string;
 		private passwordErrorMessage: string;
+		private readonly onLoginAsync: (loginData: ILoginData) => Promise<{}>;
+		private isBusy: boolean;
+		private loginErrorMessage: string;
 
-		constructor() {
+
+		constructor(onLoginAsync: (loginData: ILoginData) => Promise<{}>) {
 
 			super();
+			this.onLoginAsync = onLoginAsync;
 			this.canCloseViaOverlay = true;
 			this.userName = "";
 			this.password = "";
 			this.userNameErrorMessage = "";
 			this.passwordErrorMessage = "";
+			this.isBusy = false;
+			this.loginErrorMessage = "";
 		}
 
 		protected getContentTemplate() {
+
+			const getStatusType = () => {
+				return this.isBusy
+				? "validating"
+				: this.loginErrorMessage
+					? "error"
+					: "";
+			};
+
+			const getStatusMessage = () => {
+				return this.isBusy
+					? "Validating your credentials..."
+					: this.loginErrorMessage
+						? this.loginErrorMessage
+						: "";
+			};
 
 			return html`
 				<div class="popup-content login">
@@ -31,30 +54,37 @@ namespace components {
 						<div class="nvp">
 							<div class="nvp__name">Username: </div>
 							<div class="nvp__value">
-								<input type="text" name="username" on-input="${this.onUserNameChange}" autofocus/>
+								<input type="text" name="username" on-input="${this.onUserNameChange}" autofocus readOnly="${this.isBusy}"/>
 								<div class$="error-message${this.userNameErrorMessage ? "" : " hide"}">${this.userNameErrorMessage}</div>
 							</div>
 						</div>
 						<div class="nvp">
 							<div class="nvp__name">Password: </div>
 							<div class="nvp__value">
-								<input type="password" name="password" on-input="${this.onPasswordChange}"/>
+								<input type="password" name="password" on-input="${this.onPasswordChange}" readOnly="${this.isBusy}"/>
 								<div class$="error-message${this.passwordErrorMessage ? "" : " hide"}">${this.passwordErrorMessage}</div>
 							</div>
 						</div>
 					</div>
 					<div class="popup-footer">
-						<button on-click="${this.onCancelClick}">Cancel</button>
-						<button on-click="${this.onSubmitClick}" disabled="${!this.isSubmitEnabled()}">Login</button>
+						<span class$="message ${getStatusType()}">${getStatusMessage()}</span>
+						<span style="white-space: nowrap">
+							<button on-click="${this.onCancelClick}" disabled="${!this.isCancelEnabled()}">Cancel</button>
+							<button on-click="${this.onSubmitClick}" disabled="${!this.isSubmitEnabled()}">Login</button>
+						</span>
 					</div>
 				</div>`;
 		}
 
 		private isSubmitEnabled() {
-			return !!(this.userName && !this.userNameErrorMessage && this.password && !this.passwordErrorMessage);
+			return !this.isBusy && !!(this.userName && !this.userNameErrorMessage && this.password && !this.passwordErrorMessage);
 		}
 
-		private readonly onSubmitClick = (e: Event) => {
+		private isCancelEnabled() {
+			return !this.isBusy;
+		}
+
+		private readonly onSubmitClick = async (e: Event) => {
 
 			if (!this.isSubmitEnabled()) return false;
 
@@ -63,7 +93,33 @@ namespace components {
 				userName: (popupEl.querySelector<HTMLInputElement>('[name="username"]'))!.value,
 				password: (popupEl.querySelector<HTMLInputElement>('[name="password"]'))!.value
 			};
-			this.close(data);
+
+			const canCloseViaOverlay = this.canCloseViaOverlay;
+			try {
+
+				this.isBusy = true;
+				this.canCloseViaOverlay = false; // Prevent window can be closed
+				this.loginErrorMessage = "";
+				this.invalidate();
+
+				await this.onLoginAsync(data);
+
+				this.isBusy = false;
+				this.canCloseViaOverlay = canCloseViaOverlay; // Prevent window can be closed
+				this.close(data);
+			} catch (error) {
+
+				this.isBusy = false;
+				this.canCloseViaOverlay = canCloseViaOverlay; // Prevent window can be closed
+
+				// Show error message
+				this.loginErrorMessage = error && error.message ? error.message : error;
+				this.update();
+
+				// Focus first selectable element
+				const focusEl = this.getSelectableItems()[0];
+				if (focusEl) focusEl.focus();
+			}
 			e.preventDefault();
 			e.stopPropagation();
 			return false; // Don't perform default GET request
@@ -92,15 +148,21 @@ namespace components {
 		private readonly onUserNameChange = (e: Event) => {
 			const userNameEl = e.target as HTMLInputElement;
 			this.userName = userNameEl.value;
-			this.userNameErrorMessage = this.validateUserName(this.userName);
-			this.invalidate();
+			const userNameErrorMessage = this.validateUserName(this.userName);
+			if (this.userNameErrorMessage !== userNameErrorMessage) {
+				this.userNameErrorMessage = userNameErrorMessage;
+				this.invalidate();
+			}
 		}
 
 		private readonly onPasswordChange = (e: Event) => {
 			const passwordEl = e.target as HTMLInputElement;
 			this.password = passwordEl.value;
-			this.passwordErrorMessage = this.validatePassword(this.password);
-			this.invalidate();
+			const passwordErrorMessage = this.validatePassword(this.password);
+			if (this.passwordErrorMessage === passwordErrorMessage) {
+				this.passwordErrorMessage = passwordErrorMessage;
+				this.invalidate();
+			}
 		}
 
 		protected onKeyDown(e: KeyboardEvent) {

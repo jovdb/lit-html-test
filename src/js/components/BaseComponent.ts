@@ -79,8 +79,10 @@ namespace components {
 				children.push(nextSibling);
 				nextSibling = nextSibling.nextSibling;
 			}
+
 			return children;
 		}
+
 	}
 }
 

@@ -1,60 +1,76 @@
 
 namespace app {
 
-	function performAsyncAction<TName extends string, TResult>(name: TName, startPromise: () => Promise<TResult>): void {
-
-		// Broadcast Start
-		const startedResponse: AsyncResponse<TName, TResult> = {
-			type: "response",
-			name,
-			state: AsyncState.Started
-		};
-		broadcaster.publish(startedResponse);
+	/*
+	let lastCounter = 0;
+	// Id is to be able to match result with request
+	const id = (++lastCounter).toString(36);
+*/
+	function performAsyncAction<TRequest extends Request, TResult>(request: TRequest, startPromise: () => Promise<TResult>): void {
 
 		startPromise()
-		.then(result => {
-			// Broadcast Success
-			const response: AsyncResponse<TName, TResult> = {
-				type: "response",
-				name,
-				state: AsyncState.Success,
-				result
-			};
-			broadcaster.publish(response);
-		})
-		.catch(error => {
-			// Broadcast Error
-			const response: AsyncResponse<TName, TResult> = {
-				type: "response",
-				name,
-				state: AsyncState.Failed,
-				error
-			};
-			broadcaster.publish(response);
-		});
+			.then(result => {
+				// Broadcast Success
+				broadcaster.publish<Response<TRequest, TResult>>({
+					type: "response",
+					name: request.name,
+					request,
+					state: ResponseState.Success,
+					result
+				});
+			})
+			.catch(error => {
+				// Broadcast Error
+				broadcaster.publish<Response<TRequest, TResult>>({
+					type: "response",
+					name: request.name,
+					request,
+					state: ResponseState.Failed,
+					error
+				});
+			});
+	}
 
+	function performAction<TRequest extends Request, TResult>(request: TRequest, fn: () => TResult): void {
+		try {
+			const result = fn();
+			// Broadcast Success
+			broadcaster.publish<Response<TRequest, TResult>>({
+				type: "response",
+				name: request.name,
+				request,
+				state: ResponseState.Success,
+				result
+			});
+		} catch (error) {
+			// Broadcast Error
+			broadcaster.publish<Response<TRequest, TResult>>({
+				type: "response",
+				name: request.name,
+				request,
+				state: ResponseState.Failed,
+				error
+			});
+		}
 	}
 
 	// Listen to messages
 	broadcaster.subscribe((message: IMessage) => {
 
-		if (!isRequest(message)) return;
+		if (!messages.isRequest(message)) return;
 
 		switch (message.name) {
 			case "logOnUser":
-
-				performAsyncAction(message.name, async () => {
+				performAsyncAction(message, async () => {
 					await api.loginUserAsync(message.userName, message.password);
 					model.loggedOnUserName = message.userName;
 				});
 				break;
 
 			case "logOffUser":
-				// Clear Cookies
-				model.loggedOnUserName = "";
-				broadcaster.publish<LogOffUserResponse>({
-					type: "response",
-					name: message.name
+				performAction(message, () => {
+					// Do something like clear Cookies
+					model.loggedOnUserName = "";
 				});
 				break;
 

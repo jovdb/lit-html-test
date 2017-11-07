@@ -21,8 +21,8 @@ namespace app {
 	export function addEventListener<K extends keyof HTMLElementEventMap>(el: HTMLElement, type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, useCapture?: boolean): () => void {
 		const fn: EventListenerOrEventListenerObject = listener.bind(undefined); // make unique
 		el.addEventListener(type, fn, useCapture);
-		return () => {
+		return () => { // return unsubscribe
 			el.removeEventListener(type, fn, useCapture);
-		}; // return unsubscribe
+		};
 	}
 }

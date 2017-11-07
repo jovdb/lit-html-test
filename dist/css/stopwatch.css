@@ -1,0 +1,77 @@
+:root {
+	--stopwatch-scale: 0.72;
+}
+.stopwatch .milliseconds,
+.stopwatch .seconds
+{
+	display: inline-block;
+	font-family: monospace;
+	font-size: 30px;
+	min-width: 70px;
+	height: 1em;
+}
+
+.stopwatch .seconds 
+{
+	position: relative; /* Offset parent */
+	perspective: 50px;
+	perspective-origin: 75% 60%;
+}
+
+.stopwatch .seconds:before
+{
+	content: attr(data-prev-value);
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	text-align: right;
+	backface-visibility: hidden;
+}
+
+.stopwatch .seconds:after
+{
+	content: attr(data-value);
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	text-align: right;
+	backface-visibility: hidden;
+	transform: rotateX(0) translateX(0.1em) translateZ(0.5em) scale(var(--stopwatch-scale));
+}
+
+.stopwatch .scroll-down:before {
+	animation: rotate-down 0.3s ease-in-out;
+	animation-fill-mode: forwards;
+}
+
+.stopwatch .scroll-down:after {
+	animation: rotate-down2 0.3s ease-in-out;
+	animation-fill-mode: forwards;
+}
+
+@keyframes rotate-down {
+	0% {
+		transform: rotateX(0) translateX(0.1em) translateZ(0.5em) scale(var(--stopwatch-scale));
+	}
+
+	100% {
+		transform: rotateX(-90deg) translateX(0.1em) translateZ(0.5em) scale(var(--stopwatch-scale));
+	}
+}
+
+@keyframes rotate-down2 {
+	0% {
+		transform: rotateX(90deg) translateX(0.1em) translateZ(0.5em) scale(var(--stopwatch-scale));
+	}
+
+	100% {
+		transform: rotateX(0) translateX(0.1em) translateZ(0.5em) scale(var(--stopwatch-scale));
+	}
+}
+
+.stopwatch .milliseconds
+{
+
+}

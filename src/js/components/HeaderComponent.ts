@@ -53,14 +53,14 @@ namespace components {
 		public set loggedOnUserName(value: string) { if (this._loggedOnUserName !== value) { this._loggedOnUserName = value; this.invalidate(); }}
 
 		private logError: (err: any) => void;
-		private onLogOn: (loginData: ILoginData) => void;
+		private onLogOnAsync: (loginData: ILoginData) => Promise<{}>;
 		private onLogOff: () => void;
 
-		constructor(logError: (err: any) => void, onLogOn: (loginData: ILoginData) => void, onLogOff: () => void) {
+		constructor(logError: (err: any) => void, onLogOnAsync: (loginData: ILoginData) => Promise<{}>, onLogOff: () => void) {
 			super();
 			this._loggedOnUserName = "";
 			this.logError = logError;
-			this.onLogOn = onLogOn;
+			this.onLogOnAsync = onLogOnAsync;
 			this.onLogOff = onLogOff;
 		}
 
@@ -81,10 +81,7 @@ namespace components {
 			} else {
 
 				// LogOn
-				LoginPopup.openAsync(new LoginPopup())
-				.then(loginData => {
-					if (loginData) this.onLogOn(loginData);
-				}).catch(this.logError.bind(this));
+				LoginPopup.openAsync(new LoginPopup(this.onLogOnAsync));
 			}
 			e.preventDefault(); // Don't navigate
 			e.stopPropagation(); // Handled
@@ -112,11 +109,13 @@ namespace components {
 		private unsubscribe: (() => void) | undefined;
 
 		constructor(model: app.IModel, broadcaster: IBroadcaster = app.broadcaster) {
-			this.component = new Header(() => undefined, this.logOnUser.bind(this), this.logOffUser.bind(this));
+			this.component = new Header(() => undefined, this.logOnUserAsync.bind(this), this.logOffUser.bind(this));
 			this.model = model;
 			this.broadcaster = broadcaster;
+
+			// We could trigger an update on each message, but it is more performant to only update on message that we now will change
 			this.unsubscribe = app.broadcaster.subscribe(message => {
-				if (!app.isResponse(message)) return;
+				if (!messages.isResponse(message)) return;
 				switch (message.name) {
 					case "logOnUser":
 					case "logOffUser":
@@ -141,13 +140,16 @@ namespace components {
 			}
 		}
 
-		private logOnUser(loginData: ILoginData) {
-			this.broadcaster.publish<app.LogOnUserRequest>({
+		private async logOnUserAsync(loginData: ILoginData) {
+			const request = this.broadcaster.publish<app.LogOnUserRequest>({
 				type: "request",
 				name: "logOnUser",
 				userName: loginData.userName,
 				password: loginData.password
 			});
+
+			// TODO: create a publish and wait for sync handling? or always make async
+			return messages.responseAsAsync(request);
 		}
 
 		private logOffUser() {

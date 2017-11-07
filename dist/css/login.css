@@ -39,3 +39,53 @@
 .login .error-message.hide {
 	display: none;
 }
+
+.login .message {
+	float: left;
+	margin: 0.5em 0; /* Better centered + bottom margin nice when buttons jump below message */
+}
+
+.login .message.validating {
+	color: #888;
+}
+
+.login .message.validating:before {
+	content: "◑";
+	display: inline-block;
+	margin-right: 0.3em;
+	font-size: 1em;
+	width: 1em;
+	height: 1em;
+	line-height: 1;
+	animation: spin 1s infinite linear;
+	transform-origin: 50% 52%;
+	text-align: center;
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.login .message.error {
+	color: var(--dangerColor);
+}
+
+.login .message.error:before {
+	content: '✖';
+	display: inline-block;
+	margin-right: 0.5em;
+	background-color: var(--dangerColor);
+	border: 1px solid var(--dangerColor);
+	color: var(--whiteColor);
+	width: 1em;
+	height: 1em;
+	line-height: 1em;
+	border-radius: 0.5em;
+	text-align: center;
+}
+

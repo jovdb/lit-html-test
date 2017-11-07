@@ -9,7 +9,8 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitThis": true,
-        "outFile": "dist/js/app.js"
+        "outFile": "dist/js/app.js",
+        "sourceMap": true
     },
     "files": [
         "src/js/_references.ts"

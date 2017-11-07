@@ -5,6 +5,8 @@ namespace app {
 
 	export function render() {
 		lit.render(html`${comp(appComponent)}`, appEl);
+
+		test1.add(document.getElementById("test1")!);
 	}
 
 	export function start() {
