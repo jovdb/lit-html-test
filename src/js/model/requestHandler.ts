@@ -75,7 +75,7 @@ namespace app {
 				break;
 
 			default:
-				fail(message);
+				exhaustiveFail(message);
 				break;
 		}
 

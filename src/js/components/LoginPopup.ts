@@ -49,7 +49,7 @@ namespace components {
 
 			return html`
 				<div class="popup-content login">
-					<div class="popup-header">${icon({name: "user"})} Login</div>
+					<div class="popup-header">${icon({name: "user"})} Login test</div>
 					<div class="popup-body login-body">
 						<div class="nvp">
 							<div class="nvp__name">Username: </div>

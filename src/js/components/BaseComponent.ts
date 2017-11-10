@@ -109,7 +109,7 @@ function comp(component: components.BaseComponent) {
 		part._insert = function patchedInsert(node: Node) {
 			const el = node.firstChild;
 			insert.call(part, node);
-			comp.afterAttach(el);
+			if (el) comp.afterAttach(el);
 		};
 
 		comp.setNodePart((part as lit.NodePart));

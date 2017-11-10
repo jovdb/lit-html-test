@@ -1,8 +1,14 @@
 // No lit-html
 namespace app {
 
+	export interface IStopwatch {
+		start(): void;
+		stop(): void;
+		isRunning(): boolean;
+	}
+
 	/** Reusable part for stopwatch */
-	export function getStopWatch(onSecondsChange: (seconds: string, prevSeconds: string) => void, onMilliSecondsChange: (milliSeconds: string) => void, onButtonTextChange: (text: string) => void) {
+	export function getStopWatch(onSecondsChange: (seconds: string, prevSeconds: string) => void, onMilliSecondsChange: (milliSeconds: string) => void, onButtonTextChange: (text: string) => void): IStopwatch {
 		let startTime = 0;
 		let lastSeconds = 0;
 
@@ -15,7 +21,7 @@ namespace app {
 
 			onButtonTextChange("Stop");
 			onSecondsChange("0", "");
-			onMilliSecondsChange("0");
+			onMilliSecondsChange("000");
 
 			intervalId = setInterval(() => {
 

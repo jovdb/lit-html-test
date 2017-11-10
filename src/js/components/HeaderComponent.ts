@@ -122,7 +122,7 @@ namespace components {
 						this.update();
 						break;
 					default:
-						app.fail(message);
+						app.exhaustiveFail(message);
 						break;
 				}
 			});

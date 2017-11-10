@@ -15,10 +15,30 @@
 </head>
 <body>
 	<div id="app"></div>
-	<h2>Test1</h2>
+
 	<ul>
-		<li>no lit-html, just add with string template:
+		<li>
+			<h2>Test1</h2>
+			no lit-html, just add HTML with string template and update DOM elements
 			<div id="test1"></div>
+		</li>
+
+		<li>
+			<h2>Test2</h2>
+			lit-html, update viewmodel and rerender
+			<div id="test2"></div>
+		</li>
+
+		<li>
+			<h2>Test3</h2>
+			lit-html, no viewModel needed, only update specific elements
+			<div id="test3"></div>
+		</li>
+
+		<li>
+			<h2>Test4</h2>
+			lit-html, used as a Component class
+			<div id="test4"></div>
 		</li>
 	</ul>
 	

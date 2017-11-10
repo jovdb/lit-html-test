@@ -26,7 +26,7 @@ namespace components {
 				</svg>`;
 				break;
 			default:
-				return app.fail(name);
+				return app.exhaustiveFail(name);
 		}
 
 		return html`<div class="icon" data-name$="${name}" style$="${color ? `fill: ${color}` : ""}">${svgData}</div>`;

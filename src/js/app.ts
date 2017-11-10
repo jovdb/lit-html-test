@@ -7,6 +7,9 @@ namespace app {
 		lit.render(html`${comp(appComponent)}`, appEl);
 
 		test1.add(document.getElementById("test1")!);
+		test2.add(document.getElementById("test2")!);
+		test3.add(document.getElementById("test3")!);
+		test4.add(document.getElementById("test4")!);
 	}
 
 	export function start() {
