@@ -10,6 +10,7 @@ namespace app {
 		test2.add(document.getElementById("test2")!);
 		test3.add(document.getElementById("test3")!);
 		test4.add(document.getElementById("test4")!);
+		test5.add(document.getElementById("test5")!);
 	}
 
 	export function start() {

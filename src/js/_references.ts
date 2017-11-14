@@ -21,5 +21,6 @@
 /// <reference path="test2.ts" />
 /// <reference path="test3.ts" />
 /// <reference path="test4.ts" />
+/// <reference path="test5.ts" />
 /// <reference path="app.ts" />
 /// <reference path="model/requestHandler.ts" />

@@ -29,71 +29,113 @@ namespace test4 {
 
 	export function add(el: HTMLElement) {
 
-		class StopWatchComponent extends components.BaseComponent {
-
-			private prevSeconds: string;
-			private seconds: string;
-			private milliSeconds: string;
-			private buttonText: string;
-			private stopwatch: app.IStopwatch;
-
-			constructor() {
-				super();
-				this.prevSeconds = "";
-				this.seconds = "0";
-				this.milliSeconds = "000";
-				this.buttonText = "Start";
-
-				const onSecondsChange = (seconds, prevSeconds) => {
-					this.seconds = seconds;
-					this.prevSeconds = prevSeconds;
-					this.update(); // synchronous
-
-					const secondsEl = this.getRootChildren()[0].querySelector(".seconds")!;
-					if (prevSeconds !== "") { // at init this can be the same
-						secondsEl.classList.remove("scroll-down");
-						//@ts-ignore
-						const w = secondsEl.offsetWidth; // Trigger reflow to start animation
-						secondsEl.classList.add("scroll-down");
-					}
-
-				};
-
-				const onMilliSecondsChange = (millisSeconds) => {
-					this.milliSeconds = millisSeconds;
-					this.invalidate();
-				};
-
-				const onButtonTextChange = (buttonText) => {
-					this.buttonText = buttonText;
-					this.invalidate();
-				};
-
-				// Stopwatch logic with callbacks that need to update UI
-				this.stopwatch = app.getStopWatch(onSecondsChange, onMilliSecondsChange, onButtonTextChange);
-
-				// Overwrite method with a bound methods so lit doesn't need to unregister and register each time a new function.
-				this.onButtonClick = this.onButtonClick.bind(this);
-			}
-
-
-			private onButtonClick() {
-				if (this.stopwatch.isRunning()) {
-					this.stopwatch.stop();
-				} else {
-					this.stopwatch.start();
-				}
-			}
-
-			protected getTemplate(): lit.TemplateResult {
-				return html`<div class="stopwatch">
-					<span class="seconds" data-value$="${this.seconds}" data-prev-value$="${this.prevSeconds}">&nbsp;</span><span class="milliseconds">.${this.milliSeconds}</span>
-					<button on-click="${this.onButtonClick}">${this.buttonText}</button>
-				</div>`;
-			}
+		interface IComponent {
+			getTemplate(): lit.TemplateResult;
 		}
 
-		lit.render(html`${comp(new StopWatchComponent())}`, el);
+		interface IComponentFunctions {
+			update(): void;
+			invalidate(): void;
+			getRootElements(): Element[];
+		}
+
+		function asComponent(componentFunction: (options: IComponentFunctions) => IComponent): (part: any) => lit.TemplateResult {
+
+			let isRerenderRequested = false;
+
+			return lit.directive((part: any) => {
+
+				const update = () => part.setValue(component.getTemplate());
+
+				const invalidate = () => {
+					if (!isRerenderRequested) {
+						isRerenderRequested = true;
+						// Schedule the following as micro task, which runs before requestAnimationFrame.
+						// All additional invalidate() calls before will be ignored.
+						// https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/
+						// tslint:disable-next-line
+						Promise.resolve().then(() => { // Don't use await for tslint rule: no-floating-promises (when function is async all callers must handle it)
+							isRerenderRequested = false;
+							update();
+						});
+					}
+				};
+
+				const getRootElements = () => {
+					const children: HTMLElement[] = [];
+					let nextSibling: any = part.startNode && (part.startNode as any).nextSibling;
+					while (nextSibling) {
+						children.push(nextSibling);
+						nextSibling = nextSibling.nextSibling;
+					}
+					return children;
+				};
+
+				let component = componentFunction({update, invalidate, getRootElements});
+				return component.getTemplate();
+			});
+		}
+
+		/** This function  */
+		function stopWatch(options: IComponentFunctions): IComponent {
+
+			let prevSeconds = "";
+			let seconds = "0";
+			let milliSeconds = "000";
+			let buttonText = "Start";
+
+			const onSecondsChange = (newSeconds, newPrevSeconds) => {
+				seconds = newSeconds;
+				prevSeconds = newPrevSeconds;
+				options.update();
+
+				const secondsEl = options.getRootElements()[0].querySelector(".seconds")!;
+
+				if (secondsEl) {
+					secondsEl.classList.remove("scroll-down");
+					//@ts-ignore
+					const w = secondsEl.offsetWidth; // Trigger reflow to start animation
+					secondsEl.classList.add("scroll-down");
+				}
+
+			};
+
+			const onMilliSecondsChange = (newMillisSeconds) => {
+				milliSeconds = newMillisSeconds;
+				options.invalidate();
+			};
+
+
+			const onButtonTextChange = (newButtonText) => {
+				buttonText = newButtonText;
+				options.invalidate();
+			};
+
+			// Stopwatch logic with callbacks that need to update UI
+			const stopwatch = app.getStopWatch(onSecondsChange, onMilliSecondsChange, onButtonTextChange);
+
+			const onButtonClick = () => {
+				if (stopwatch.isRunning()) {
+					stopwatch.stop();
+				} else {
+					stopwatch.start();
+				}
+			};
+
+			const getTemplate = () => {
+				return html`<div class="stopwatch">
+					<span class="seconds" data-value$="${seconds}" data-prev-value$="${prevSeconds}">&nbsp;</span><span class="milliseconds">.${milliSeconds}</span>
+					<button on-click="${onButtonClick}">${buttonText}</button>
+				</div>`;
+			};
+
+			return {
+				getTemplate
+			};
+		}
+
+
+		return lit.render(html`${asComponent(stopWatch)}`, el);
 	}
 }
 
